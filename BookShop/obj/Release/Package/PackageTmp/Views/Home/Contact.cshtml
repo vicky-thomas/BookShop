@@ -1,0 +1,48 @@
+﻿@model BookShop.Models.Book
+
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script>
+        //$("#SaveUserRecord").click(function () {
+        function fun() {
+            var data = $("#SubmitForm").serialize();
+            console.log(data);
+            $.ajax({
+                type: "Post",
+                url: "/Home/BookValues",
+                data: data,
+                success: function (result) {
+                   alert("Success!..");
+                    window.location.href = "/Home/Article";
+                //    $("#MyModal").modal("hide");
+
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <form id="form">
+            <fieldset id="SubmitForm">
+                <br>
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.BookName, new { @id = "UserDep", @class = "form-control", @placeholder = "UserDep*" })
+                </div>
+                <div class="form-group">
+                    <a href="#" onclick="fun()" class="btn btn-danger" id="SaveUserRecord">Add</a>
+                </div>
+
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>
+

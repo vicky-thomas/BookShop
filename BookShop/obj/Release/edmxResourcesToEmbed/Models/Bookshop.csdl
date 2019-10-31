@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SchemaModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ArticleName">
+    <Key>
+      <PropertyRef Name="Article_id" />
+    </Key>
+    <Property Name="Article_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="id" Type="Int32" />
+    <Property Name="ArticleName1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Book" Relationship="Self.FK__ArticleNa__Artic__29572725" FromRole="ArticleName" ToRole="Book" />
+  </EntityType>
+  <EntityType Name="Book">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BookName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="ArticleNames" Relationship="Self.FK__ArticleNa__Artic__29572725" FromRole="Book" ToRole="ArticleName" />
+  </EntityType>
+  <Association Name="FK__ArticleNa__Artic__29572725">
+    <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+    <End Role="ArticleName" Type="Self.ArticleName" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Book">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="ArticleName">
+        <PropertyRef Name="id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SchemaEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ArticleNames" EntityType="Self.ArticleName" />
+    <EntitySet Name="Books" EntityType="Self.Book" />
+    <AssociationSet Name="FK__ArticleNa__Artic__29572725" Association="Self.FK__ArticleNa__Artic__29572725">
+      <End Role="Book" EntitySet="Books" />
+      <End Role="ArticleName" EntitySet="ArticleNames" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

@@ -1,0 +1,396 @@
+﻿@model BookShop.Models.Article
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.tmpl.js"></script>
+    <script>
+        var html = "";
+        loadData1();
+        $(document).ready(function ()
+        {
+            $("#MyModal").show();
+            $("#MyModal1").hide();
+            $("#MyModal2").hide();
+            $('#Dropdownlist').hide();
+            
+           
+        });
+
+
+        //DropDown Function
+        function loadData1() {
+
+                $.ajax({
+                url: "/Home/bookdetails",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+
+                    html += '<select name="Name" id="book">';
+                    $.each(result, function (key, item) {
+                        html += '<option value="' + item.id + '" selected>'
+                        html += item.BookName
+                        html += '</option>'
+                    });
+                    html += '</select>';
+                },
+            });
+        }
+        //---------------------------Edit Drop page
+        $("#LoadingStatus").html("Loading....");
+        $.get("/Home/Page", null, DataBind);
+        function DataBind(UserList) {
+            $.template('newData', '<tr class="row_${Article_id}">\
+                <td><input type="text" value="${ ArticleName }"  onchange="onchangeValue(${Article_id})"/></td>\
+                <td id="Drop">'+ html + '</td>\
+                <td><a href="#" class="btn - warning" onclick="  SaveUserRecord1( ${Article_id} )" > <i class="glyphicon glyphicon-edit"></i></a></td>\
+                <td><a href="#" class="btn btn - danger" onclick="DeleteUserRecord( ${Article_id})"> <i class="glyphicon glyphicon-remove"></i></a></td>\
+                </tr>');
+            $.tmpl('newData', UserList).appendTo('#SetUsersList1');
+        }
+
+        var stringArray = new Array();
+        function onchangeValue(id)
+        {
+
+            stringArray.push(id);
+        }
+        function AddNewUser() {
+            $.get("/Home/getdropdownlist", null, DataBind3);
+            function DataBind3(UserList) {
+                var data = "";
+                var data_id = "";
+                var article_id = "";
+                var data1;         
+                var selectedList1 = [];
+                var selectedList2 = [];
+                //selectedList2.push(stringArray);
+                var postData = { values: stringArray };
+                selectedList2.push(postData);
+                console.log(UserList);
+                $.each(UserList, function (key, item) {
+                    data = $('#SubmitForm #SetUsersList1 .row_' + item.Article_id + ' td input').val();
+                    data_id = $('#SubmitForm #SetUsersList1 .row_' + item.Article_id + ' td select').val();
+                    article_id = item.Article_id;
+                    if (data != undefined)
+                    {
+                        data1 = {
+                            ArticleName: data,
+                            Article_id: article_id,
+                            id: data_id
+                            };
+                        selectedList1.push(data1);                    
+                    }
+
+                });
+                    datafile =
+                        {
+                        Articles: selectedList1,
+                        arr: selectedList2
+                        }
+                        $.ajax({
+                        type: "POST",
+                        url: "/Home/EditDoneAll",
+                        cache: false,
+                        data: JSON.stringify(datafile),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        success: function ()
+                        {
+                            window.location.href = "/Home/EditMultipleRecord";
+                            $("#MyModal").show();
+                            $("#MyModal1").hide();
+                        }
+                        });
+                };
+            
+        }
+        
+        //------------------------------Edit call----------------------
+        function EditUserRecord(UserId)
+        {
+            window.location.href = "/Home/Edit?id=" + UserId;
+        }
+           
+       //-----------------------------Delete call--------------------------
+        var DeleteUserRecord = function (UserId) {
+            var url = "/Home/Delete?id=" + UserId;
+            $.ajax({
+                type: "POST",
+                url: url,
+                cache: false,
+                success: function (obj) {
+                    window.location.href = "/Home/sample";
+                }
+            })
+        }
+        //---------------------------------------------------------------------------Single view---------
+        
+        $.get("/Home/Page", null, DataBind2);
+        function DataBind2(UserList) {
+            $.template('newData', '<tr class="row_${Article_id}">\
+                <td>${ ArticleName }</td>\
+                <td>${ books[0].BookName }</td>\
+                <td><a href="#" class="btn - warning" onclick="SaveUserRecord1( ${Article_id} )" > <i class="glyphicon glyphicon-edit"></i></a></td >\
+                <td><a href="#" class="btn btn - danger" onclick="DeleteUserRecord( ${Article_id})"> <i class="glyphicon glyphicon-remove"></i></a></td>\
+                </tr > ');
+            $.tmpl('newData', UserList).appendTo('#SetUsersList');
+        }
+           
+       
+        //---------------------------------------------New page-------------------
+        function NewPage()
+        {
+            $("#MyModal1").show();
+            $("#MyModal").hide();
+            $('#Dropdownlist').hide();
+           
+        }
+        //-----------------------------------------------------edit option viewed in single column
+        
+        $("#LoadingStatus").html("Loading....");
+        function SaveUserRecord(userid) {
+            $("#MyModal2").show();
+            $("#MyModal1").hide();
+            $("#MyModal").hide();
+            $.get("/Home/bookdetails", null, DataBind32);
+            $.get("/Home/EditSingleRow?id=" + userid, null, DataBind42);
+            var id = userid;
+
+            function DataBind42(UserList)
+            {
+                
+                $.template('newData4', '<tr class="row_${Article_id}">\
+                <td><input type="text" value="${ ArticleName }" /></td>\
+                <td><select class="bookname1_${ Article_id }"></select ></td>\
+                <td><a href="#" class="btn - warning" onclick="SingleEditUserRecord( ${Article_id} )" > <i class="glyphicon glyphicon-ok-circle"></i></a></td>\
+                </tr>');
+                $.tmpl('newData4', UserList).appendTo('#SetUsersList3');
+            }
+
+            
+            function DataBind32(list)
+            {
+                
+                $.template("newData3", "<option value = '${id}' > ${BookName}</option >");
+                $.tmpl("newData3", list).append('.bookname1_' + userid );
+                
+            }
+        }
+        function SingleEditUserRecord(UserId)
+        {
+            var singleart = "";
+            var single_book = "";
+            var data1;
+            var EditedselectedList = [];
+            singleart = $('#SubmitForm2 #SetUsersList3 .row_' + UserId + ' td input').val();
+            single_book = $('#SubmitForm2 #SetUsersList3 .row_' + UserId + ' td select').val();
+            data1 = {
+                ArticleName: singleart,
+                Article_id: UserId,
+                id: single_book
+            };
+            EditedselectedList.push(data1); 
+            datafile =
+                {
+                Articles: EditedselectedList
+                }
+            $.ajax({
+                type: "POST",
+                url: "/Home/EditDoneAll",
+                cache: false,
+                data: JSON.stringify(datafile),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    window.location.href = "/Home/EditMultipleRecord";
+                    $("#MyModal").show();
+                    $("#MyModal1").hide();
+                }
+            });
+        };
+        function logout()
+        {
+            window.location.href = "/Home/EditMultipleRecord";
+        }
+        //-------------------------------------------------------- edit on same page--------------------------------------------------------------
+        $("#LoadingStatus").html("Loading....");
+        function SaveUserRecord1(userid) {
+            $("#MyModal2").show();
+            $("#MyModal1").hide();
+            $("#MyModal").hide();
+           
+
+            $.get("/Home/Page", null, DataBind44);
+            function DataBind44(UserList)
+            {
+              
+                $.template('newData4', '<tr class="row_${Article_id}">\
+                <td>{{if Article_id ==' + userid + '}}<input type="text" value="${ ArticleName }" />{{else}}<p>${ ArticleName }</p></td>{{/if}}\
+                     <td>{{if Article_id ==' + userid + '}}'+html+'{{else}}<p>${ books[0].BookName }</p></td>{{/if}}\
+                     </td >\
+                <td><a href="#" class="btn - warning" onclick="SingleEditUserRecord( ${Article_id} )" > <i class="glyphicon glyphicon-ok-circle"></i></a></td>\
+                </tr>');
+                $.tmpl('newData4', UserList).appendTo('#SetUsersList3');
+            }
+
+
+
+            $.get("/Home/bookdetails", null, DataBind52);
+            function DataBind52(list) {
+                //console.log(list);
+                var temp = "newData3";
+                $.template("newData3", "<option value = ' ${id}' > ${ BookName }</option >");
+                $.tmpl("newData3", list).appendTo('.bookname17_' + userid);
+            }
+
+
+            
+            //$.getJSON("/Home/bookdetails2", function (data) {
+            //    console.log(data);
+            //    $.each(data, function (index, value) {
+            //        // APPEND OR INSERT DATA TO SELECT ELEMENT.
+            //        $('.bookname17_' + userid).append('<option value="' + value.id + '">' + value.BookName + '</option>');
+            //    });
+            //});
+
+
+            //$.getJSON("/Home/bookdetails2", function (data) {
+            //    console.log(data);
+            //    $.each(data, function (key, value) {
+            //        $('.bookname17_' + userid)
+            //            .append($("<option></option>")
+            //                .attr("value", value.id)
+            //                .text(value.BookName));
+            //    });
+            //});
+           
+        }
+          
+
+    
+        function SingleEditUserRecord(UserId) {
+            var singleart = "";
+            var single_book = "";
+            var data1;
+            var EditedselectedList = [];
+            singleart = $('#SubmitForm2 #SetUsersList3 .row_' + UserId + ' td input').val();
+            single_book = $('#SubmitForm2 #SetUsersList3 .row_' + UserId + ' td select').val();
+            data1 = {
+                ArticleName: singleart,
+                Article_id: UserId,
+                id: single_book
+            };
+            EditedselectedList.push(data1);
+            datafile =
+                {
+                    Articles: EditedselectedList
+                }
+            $.ajax({
+                type: "POST",
+                url: "/Home/EditDoneAll",
+                cache: false,
+                data: JSON.stringify(datafile),
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    window.location.href = "/Home/EditMultipleRecord";
+                    $("#MyModal").show();
+                    $("#MyModal1").hide();
+                }
+            });
+        };
+    </script>
+    <style>
+        #btn 
+        {
+            padding: 10px;
+            color: black;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="MyModal"  >
+        <form id="SubmitForm">
+            <div class="container" style="margin-top:3%">
+                <a href="#" class="btn btn-info" onclick="NewPage()">Edit All</a> <br /><br />
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ArticleName</th>
+                            <th>BookName</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="SetUsersList">
+
+                        <tr id="LoadingStatus" style="color:red"></tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </form>
+    </div>
+    <div id="MyModal1">
+        <form id="SubmitForm">
+            <div class="container" style="margin-top:3%">
+                <a href="#" class="btn btn-info" onclick="AddNewUser()">save All</a> <br /><br />
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ArticleName</th>
+                            <th>BookName</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="SetUsersList1">
+
+                        <tr id="LoadingStatus" style="color:red"></tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </form>
+    </div>
+    <div id="MyModal2">
+        <form id="SubmitForm2">
+            <div class="container" style="margin-top:3%">
+              
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ArticleName</th>
+                            <th>BookName</th>
+                            <th>Save</th>
+                            </tr>
+                    </thead>
+
+                    <tbody id="SetUsersList3">
+
+                        <tr id="LoadingStatus" style="color:red"></tr>
+                    </tbody>
+
+                </table>
+                <button id="btn" class="glyphicon glyphicon-log-out" onclick="logout()"></button>
+            </div>
+        </form>
+    </div>
+</body>
+</html >

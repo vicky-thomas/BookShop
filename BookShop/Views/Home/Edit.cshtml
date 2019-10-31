@@ -1,0 +1,102 @@
+﻿@model BookShop.Models.ArticleDetails
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script>
+        $(document).ready(function () {
+            loadData1();
+
+
+        });
+        var dropdown = 0;
+        function loadData1() {
+            $.ajax({
+                url: "/Home/bookDetails",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    var html = "";
+                    html += '<select name="id" id="Crd2">';
+                        $.each(result, function (key, item) {
+
+                        html += '<option value="' + item.id + '" selected> '
+                        html += item.BookName
+                        html += '</option>'
+
+                    });
+                    
+                    html += '</select>';
+                    //Console.log(html);
+                    $('#Dropdownlist').html(html);
+
+                },
+                error: function (err) { console.log(err) }
+            });
+        }
+
+
+        function dropdownclick() {
+            var data = $("#SubmitForm").serialize();
+            console.log(data);
+            $.ajax({
+                url: "/Home/EditDone",
+                type: "post",
+                data: data,
+                success: function () {
+                    window.location.href = "/Home/EditDrop"
+                    
+                }
+
+            });
+
+        }
+    </script>
+</head>
+<body>
+ 
+    <form id="SubmitForm">
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Article_id)
+
+            <br>
+            <div style="margin-top:50px;margin-left:20px">
+                @Html.LabelFor(model => model.ArticleName)
+   
+                <div>
+                    @Html.EditorFor(model => model.ArticleName)
+                    @Html.ValidationMessageFor(model => model.ArticleName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <strong style="margin-left: 33px">Select Details</strong><br />
+                <div style="margin-left:250px"><p id="Dropdownlist" style="margin-left: -215px"></p></div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" onclick="dropdownclick()" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</body>
+</html>

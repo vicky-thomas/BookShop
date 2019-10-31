@@ -1,0 +1,198 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EditDoneAll</title>
+</head>
+<body>
+    <div> 
+        Edit done !
+    </div>
+</body>
+</html>
+
+
+
+@*@model BookShop.Models.ArticleName
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.tmpl.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#MyModal").show();
+            $("#MyModal1").hide();
+        });
+        //---------------------------Edit Drop page
+        $("#LoadingStatus").html("Loading....");
+        $.get("/Home/Page", null, DataBind);
+        function DataBind(UserList)
+        {
+            $.template('newData', '<tr class="row_${Article_id}">\
+                <td><input type="text" value="${ ArticleName1 }" /></td>\
+                <td><select class="bookname_${ id }"></select ></td>\
+                <td><a href="#" class="btn - warning" onclick="EditUserRecord( ${Article_id} )" > <i class="glyphicon glyphicon-edit"></i></a></td>\
+                <td><a href="#" class="btn btn - danger" onclick="DeleteUserRecord( ${Article_id})"> <i class="glyphicon glyphicon-remove"></i></a></td>\
+                </tr>');
+            $.tmpl('newData', UserList).appendTo('#SetUsersList1');
+        }
+
+        $.get("/Home/getdropdownlist", null, DataBind1);
+        function DataBind1(UserList) {
+            var list = UserList;
+            $.each(UserList, function (key, item) {
+                $.template('newData1', '{{if id ==' + item.id + '}}<option value = "${id}" selected> ${BookName}</option >{{/if}}\
+                    {{if id !=' + item.id + '}}<option value = "${id}" > ${BookName}</option >{{/if}}\
+                    ');
+                $.tmpl('newData1', list).appendTo('.bookname_' + item.id);
+            });
+        }
+       
+        function AddNewUser() {
+                $.get("/Home/getdropdownlist", null, DataBind1);
+            function DataBind1(UserList) {
+                var data = "";
+                var data_id = "";
+                var article_id = "";
+                var data1;         
+                var selectedList1 = [];
+               // console.log(UserList);
+                $.each(UserList, function (key, item) {
+                    data = $('#SubmitForm #SetUsersList1 .row_' + item.id + ' td input').val();
+                    data_id = $('#SubmitForm #SetUsersList1 .row_' + item.id + ' td select').val();
+                    article_id = item.id;
+                    if (data != undefined) {
+                        data1 = {
+                            ArticleName1: data,
+                            Article_id: article_id,
+                            id: data_id
+                        };
+                        selectedList1.push(data1);                    
+                    }
+
+                }
+                );
+                datafile =
+                    {
+                        Articles: selectedList1
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/EditDoneAll",
+                        data: JSON.stringify(datafile),
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        success: function ()
+                        {
+                            window.location.href = "/Home/EditDrop";
+                            $("#MyModal").show();
+                            $("#MyModal1").hide();
+                        }
+                        });
+                };
+            
+        }
+        
+        //------------------------------Edit call----------------------
+        function EditUserRecord(UserId)
+        {
+            window.location.href = "/Home/Edit?id=" + UserId;
+        }
+           
+       //-----------------------------Delete call--------------------------
+        var DeleteUserRecord = function (UserId) {
+            var url = "/Home/Delete?id=" + UserId;
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (obj) {
+                    window.location.href = "/Home/sample";
+                }
+            })
+        }
+        //---------------------------------------------------------------------------
+        $.get("/Home/Page", null, DataBind2);
+            function DataBind2(UserList) {
+                $.template('newData', '<tr class="row_${Article_id}">\
+                <td>${ ArticleName1 }</td>\
+                <td>${ BookName }</td>\
+                <td><a href="#" class="btn - warning" onclick="EditUserRecord( ${Article_id} )" > <i class="glyphicon glyphicon-edit"></i></a></td>\
+                <td><a href="#" class="btn btn - danger" onclick="DeleteUserRecord( ${Article_id})"> <i class="glyphicon glyphicon-remove"></i></a></td>\
+                </tr>');
+                $.tmpl('newData', UserList).appendTo('#SetUsersList');
+        }
+        //---------------------------------------------New page-------------------
+        function NewPage()
+        {
+            $("#MyModal1").show();
+            $("#MyModal").hide();
+           
+        }
+    </script>
+</head>
+
+<body>
+    <div id="MyModal">
+                    <form id="SubmitForm">
+                        <div class="container" style="margin-top:3%">
+                            <a href="#" class="btn btn-info" onclick="NewPage()">Edit All</a> <br /><br />
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ArticleName</th>
+                                        <th>BookName</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="SetUsersList">
+
+                                    <tr id="LoadingStatus" style="color:red"></tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </form>
+                </div>
+    <div id="MyModal1">
+                    <form id="SubmitForm">
+                        <div class="container" style="margin-top:3%">
+                            <a href="#" class="btn btn-info" onclick="AddNewUser()">save All</a> <br /><br />
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ArticleName</th>
+                                        <th>BookName</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="SetUsersList1">
+
+                                    <tr id="LoadingStatus" style="color:red"></tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </form>
+                </div>
+</body>
+</html >*@

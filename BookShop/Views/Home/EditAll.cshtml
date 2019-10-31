@@ -1,0 +1,121 @@
+﻿@model IEnumerable<BookShop.Models.ArticleName>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/tmpl.js"></script>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EditAll</title>
+    <script>
+        $(document).ready(function loadData() {
+                $.ajax({
+                    url: "/Home/Drop",
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        console.log(result);
+                        var html = "";
+                        html += '<select name="id" id="Crd2">';
+                        html += '<option value="car"> bookname </option>'
+                        $.each(result, function (key, item) {
+                            html += '<option value="' + item.id + '"> '
+                            html += item.BookName
+                            html += '</option>'
+                        });
+                        html += '</select>';
+                        //Console.log(html);
+                        $('#Dropdownlist').html(html);
+
+                    },
+                    error: function (err) { console.log(err) }
+                });
+            })
+
+
+            function dropdownclick() {
+                var data = $("#SubmitForm").serialize();
+                console.log(data);
+                $.ajax({
+                    url: "/Home/EditAllDone",
+                    type: "post",
+                    data: data,
+                    success: function () {
+                        window.location.href = "/Home/Sample"
+                        alert("Done....!");
+                    }
+
+                });
+
+        }
+        $.get("/Home/getdropdownlist", null, DataBind1);
+        function DataBind1(UserList) {
+            console.log(UserList);
+            var list = UserList;
+
+
+
+            $.each(UserList, function (key, item) {
+
+                $.template('newData1', '{{if id ==' + item.id + '}}<option value = "${id}" selected> ${BookName}</option >{{/if}}\
+                    {{if id !=' + item.id + '}}<option value = "${id}" > ${BookName}</option >{{/if}}\
+                    ');
+
+                $.tmpl('newData1', list).appendTo('.bookname_' + item.id);
+
+
+            });
+
+        }
+
+    </script>
+</head>
+<body>
+
+    <table id="SubmitForm">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ArticleName1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Book.BookName)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.EditorFor(modelItem => item.ArticleName1)
+            </td>
+
+            <td>
+                @*<div id="list" style="margin-left:250px" onload="loadData1()"><p id="Dropdownlist" style="margin-left: -215px"></p></div>*@
+                <select class="bookname_${ id }"></select>
+            </td>
+            <td>
+                <input type="button" value="Edit" onclick="location.href='@Url.Action("Edit", "Home",new {  id=item.Article_id })'" />
+            </td>
+            <td>
+                <input type="button" value="Delete" onclick="location.href='@Url.Action("Delete", "Home",new {  id=item.Article_id })'" />
+            </td>
+        </tr>
+        }
+
+        </table>
+    <br>
+    <div>
+        <input type="button" value="SaveAll" onclick="location.href='@Url.Action("EditAllDone", "Home")'" />
+    </div>
+</body>
+</html>

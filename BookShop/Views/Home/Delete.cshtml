@@ -1,0 +1,48 @@
+﻿@model BookShop.Models.ArticleName
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Delete</title>
+</head>
+<body>
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <h4>ArticleName</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ArticleName1)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.ArticleName1)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Book.BookName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Book.BookName)
+            </dd>
+    
+        </dl>
+    
+        @using (Html.BeginForm()) {
+            @Html.AntiForgeryToken()
+    
+            <div class="form-actions no-color">
+                <input type="submit" value="Delete" class="btn btn-default" /> |
+                @Html.ActionLink("Back to List", "Index")
+            </div>
+        }
+    </div>
+</body>
+</html>

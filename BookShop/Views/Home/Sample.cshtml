@@ -1,0 +1,48 @@
+﻿@model IEnumerable<BookShop.Models.Article>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+   
+</head>
+<body>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ArticleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Book.BookName)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ArticleName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Book.BookName)
+                </td>
+                <td>
+                    <input type="button" value="Edit" onclick="location.href='@Url.Action("Edit", "Home",new {  id=item.Article_id })'" />
+                </td>
+                <td>
+                    <input type="button" value="Delete" onclick="location.href='@Url.Action("Delete", "Home",new {  id=item.Article_id })'" />
+                </td>
+            </tr>
+        }
+
+    </table>
+    <div>
+    <input type="button" value="EditAll" onclick="location.href='@Url.Action("EditDrop", "Home")'" />
+     </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+﻿@model BookShop.Models.ArticleName
+@{
+    ViewBag.Title = "FeedBackForm";
+    Layout = null;
+}
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script>
+        $(document).ready(function () {
+            loadData1();
+
+
+        });
+        var dropdown = 0;
+        function loadData1() {
+            $.ajax({
+                url: "/Home/Drop",
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    console.log(result);
+                    var html = "";
+                    html += '<select name="id" id="Crd2">';
+                    html += '<option value="cars"> Select Details </option>'
+                    $.each(result, function (key, item) {
+                        html += '<option value="' + item.id + '"> '
+                        html += item.BookName
+                        html += '</option>'
+                    });
+                    html += '</select>';
+                    //Console.log(html);
+                    $('#Dropdownlist').html(html);
+
+                },
+                error: function (err) { console.log(err) }
+            });
+        }
+
+
+        function dropdownclick() {
+            var data = $("#SubmitForm").serialize();
+            console.log(data);
+            $.ajax({
+                url: "/Home/Saved",
+                type: "post",
+                data: data,
+                success: function () {
+                    window.location.href = "/Home/Sample"
+                    alert("Done....!");
+                }
+
+            });
+
+        }
+    </script>
+</head>
+<body>
+    <form id="form">
+        <fieldset id="SubmitForm">
+            <br>
+            <div>
+                @Html.TextBoxFor(m => m.ArticleName1, new { @id = "AName", @placeholder = "Article*" })
+            </div>
+            <div class="form-group">
+                <strong>Select Details</strong><br />
+                <div><p id="Dropdownlist"></p></div>
+            </div>
+            <div class="form-group">
+                <a href="#" type="button" onclick="dropdownclick()" class="btn btn-danger" id="SaveUserRecord">Submit</a>
+            </div>
+        </fieldset>
+    </form>
+
+</body>
+</html>

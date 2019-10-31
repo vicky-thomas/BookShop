@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="SchemaModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="ArticleName">
+    <Key>
+      <PropertyRef Name="Article_id" />
+    </Key>
+    <Property Name="Article_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="id" Type="int" />
+    <Property Name="ArticleName" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Book">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BookName" Type="varchar" MaxLength="20" />
+  </EntityType>
+  <Association Name="FK__ArticleNa__Artic__29572725">
+    <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+    <End Role="ArticleName" Type="Self.ArticleName" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Book">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="ArticleName">
+        <PropertyRef Name="id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="SchemaModelStoreContainer">
+    <EntitySet Name="ArticleName" EntityType="Self.ArticleName" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Book" EntityType="Self.Book" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__ArticleNa__Artic__29572725" Association="Self.FK__ArticleNa__Artic__29572725">
+      <End Role="Book" EntitySet="Book" />
+      <End Role="ArticleName" EntitySet="ArticleName" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
